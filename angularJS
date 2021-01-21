@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milan Djordjevic</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.4/angular.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .main {
+            height: 50%;
+            width: 50%;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .modal {
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal .content {
+            width: 50%;
+            min-height: 25%;
+            background: #fff;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .modal .header::after {
+            content: '';
+            display: block;
+            border-bottom: 1px solid silver;
+        }
+
+        .modal button {
+            margin-bottom: 16px;
+            font-size: 1em;
+            height: 64px;
+            cursor: pointer;
+            background: #3880ff;
+            padding: 16px;
+            border: none;
+            outline: none;
+            font-weight: bold;
+            border-radius: 25px;
+            color: #fff;
+            box-shadow: none;
+        }
+
+        .modal button:focus {
+            transition: 1s;
+            background: #5438FF;
+        }
+
+        .modal h4 {
+            color: #28a745;
+        }
+
+        @keyframes NgRepeatAnimation {
+            0% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+
+            75% {
+                opacity: 0.8;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes Anim {
+            0% {
+                font-size: 200px;
+            }
+
+            25% {
+                font-size: 150px;
+            }
+
+            50% {
+                font-size: 100px;
+            }
+
+            75% {
+                font-size: 50px;
+            }
+
+            100% {
+                font-size: 25px;
+            }
+        }
+
+        .anim {
+            animation: Anim 1s;
+            animation-iteration-count: infinite;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .ng-repeat-animation {
+            animation: NgRepeatAnimation 1s;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .main {
+                width: 80%;
+                height: 80%;
+            }
+
+            .modal .content {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<script>
+    var myapp = angular.module('myApp', []);
+    myapp.controller('index-controller', function ($scope, $interval, $timeout) {
+
+        class Conf {
+            constructor() {
+                this.word = 'POSAO';
+                this.letter = '';
+                this.defaultStyle = 'width: 19%; height: 19%; background: #ebe8e6;';
+                this.specialStyle = 'width: 19%; height: 19%; background: #3880ff;';
+                this.arr = [];
+                this.msgSuccess = 'BRAVO!';
+                this.msg = '';
+                this.duration = window.innerWidth < 800 ? 2 : 4;
+                this.shakeTime = 2000;
+            }
+        }
+
+        class Box {
+            constructor(name, defaultStyle, specialCharacter) {
+                this.style = defaultStyle;
+                this.name = name;
+                this.specialCharacter = specialCharacter;
+            }
+        }
+
+        let stopWatchInterval;
+        $scope.counter = 0;
+
+        $scope.shaker = function () {
+            let int = $interval(() => {
+                for (let c = $scope.conf.arr.length - 1; c > 0; c--) {
+                    let b = Math.floor(Math.random() * (c + 1));
+                    let a = $scope.conf.arr[c];
+                    $scope.conf.arr[c] = $scope.conf.arr[b];
+                    $scope.conf.arr[b] = a;
+                }
+                return $scope.conf.arr;
+            }, 100);
+
+            $timeout(() => {
+                $interval.cancel(int);
+                $scope.time();
+            }, 2000)
+        }
+
+        $scope.startGame = function () {
+            $scope.conf = new Conf();
+            for (let i = 0; i < 25; i++) {
+                let m = $scope.conf.word.split('');
+                if (i > 9 && i < 15)
+                    $scope.conf.arr.push(new Box(m[i - 10], $scope.conf.specialStyle, true));
+                else
+                    $scope.conf.arr.push(new Box(i, $scope.conf.defaultStyle, false));
+            }
+
+            $scope.counter = 3;
+            let int = $interval(() => {
+                $scope.counter--;
+                if (!$scope.counter) {
+                    $interval.cancel(int);
+                    $scope.shaker();
+                }
+            }, 1000)
+        }
+
+        $scope.startGame();
+
+        $scope.time = function () {
+            $scope.second = 0;
+            $scope.milisecond = 0;
+            stopWatchInterval = $interval(() => {
+                if ($scope.milisecond > 99) {
+                    $scope.milisecond = 0;
+                    $scope.second++
+                } else
+                    $scope.milisecond++;
+                if ($scope.second == $scope.conf.duration) {
+                    $interval.cancel(stopWatchInterval);
+                    $scope.startGame(); //start again if time is up
+                }
+            }, 10)
+        }
+
+        $scope.selectAnswers = function (letter) {
+
+            if (!letter.specialCharacter || !$scope.milisecond)
+                return
+
+            letter.style += ' background: #5438FF';
+
+            $scope.conf.letter += letter.name;
+            if ($scope.conf.letter.length == $scope.conf.word.length) {
+                if ($scope.conf.letter == $scope.conf.word) {
+                    $interval.cancel(stopWatchInterval);
+                    $scope.conf.msg = $scope.conf.msgSuccess;
+                } else {
+                    $interval.cancel(stopWatchInterval);
+                    $scope.startGame(); //start again wrong inputs
+                }
+            }
+        }
+    });
+</script>
+
+<body ng-app='myApp' ng-controller='index-controller'>
+    <div class="main">
+        <div ng-click='selectAnswers(item)' ng-class="{'ng-repeat-animation': item.specialCharacter}" class="box"
+            ng-repeat='item in conf.arr' style='{{item.style}}'>
+            {{item.specialCharacter ? item.name : ''}}
+        </div>
+    </div>
+
+    <div ng-if='conf.msg' class="modal">
+        <div class="content">
+            <div class="header">
+                <h3>BRAVO!</h3>
+            </div>
+            <div>
+                <h4>
+                    Time: {{second}}:{{milisecond}}
+                </h4>
+                <button ng-click='startGame()'>IGRAJ PONOVO</button>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if='counter' class="modal">
+        <div class="anim">
+            {{counter}}
+        </div>
+    </div>
+</body>
+
+</html>
