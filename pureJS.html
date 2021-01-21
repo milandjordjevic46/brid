@@ -168,7 +168,7 @@
 </head>
 <script>
 
-    class Conf {
+    class Config {
         constructor() {
             this.word = 'POSAO';
             this.letter = '';
@@ -189,19 +189,19 @@
 
     let stopWatchInterval;
     let counter = 0;
-    let conf;
+    let config;
     let milisecond;
     let second;
 
     function shaker() {
         let int = setInterval(() => {
-            for (let c = conf.arr.length - 1; c > 0; c--) {
+            for (let c = config.arr.length - 1; c > 0; c--) {
                 let b = Math.floor(Math.random() * (c + 1));
-                let a = conf.arr[c];
-                conf.arr[c] = conf.arr[b];
-                conf.arr[b] = a;
+                let a = config.arr[c];
+                config.arr[c] = config.arr[b];
+                config.arr[b] = a;
             }
-            return draw(conf.arr);
+            return draw(config.arr);
         }, 100);
 
         setTimeout(() => {
@@ -224,18 +224,18 @@
 
     function startGame() {
 
-        conf = new Conf();
+        config = new Config();
         for (let i = 0; i < 25; i++) {
-            let m = conf.word.split('');
+            let m = config.word.split('');
             if (i > 9 && i < 15)
-                conf.arr.push(new Box(m[i - 10], 'ng-repeat-animation specialStyle', true));
+                config.arr.push(new Box(m[i - 10], 'ng-repeat-animation specialStyle', true));
             else
-                conf.arr.push(new Box(i, 'defaultStyle', false));
+                config.arr.push(new Box(i, 'defaultStyle', false));
         }
 
         counter = 3;
         showCounter(counter);
-        draw(conf.arr)
+        draw(config.arr)
 
         let int = setInterval(() => {
             counter--;
@@ -257,7 +257,7 @@
                 second++
             } else
                 milisecond++;
-            if (second == conf.duration) {
+            if (second == config.duration) {
                 clearInterval(stopWatchInterval);
                 startGame(); //start again if time is up
             }
@@ -268,10 +268,10 @@
         if (!letter.specialCharacter || !milisecond)
             return
 
-        conf.letter += letter.name;
+        config.letter += letter.name;
 
-        if (conf.letter.length == conf.word.length) {
-            if (conf.letter == conf.word) {
+        if (config.letter.length == config.word.length) {
+            if (config.letter == config.word) {
                 clearInterval(stopWatchInterval);
                 showSuccess();
 
@@ -315,7 +315,7 @@
             <div class="header">
                 <h3>BRAVO!</h3>
             </div>
-            <div class="">
+            <div>
                 <h4 id="timer">
                 </h4>
                 <button onclick='hideSuccess(); startGame()'>IGRAJ PONOVO</button>
