@@ -156,7 +156,7 @@
     var myapp = angular.module('myApp', []);
     myapp.controller('index-controller', function ($scope, $interval, $timeout) {
 
-        class Conf {
+        class Config {
             constructor() {
                 this.word = 'POSAO';
                 this.letter = '';
@@ -183,13 +183,13 @@
 
         $scope.shaker = function () {
             let int = $interval(() => {
-                for (let c = $scope.conf.arr.length - 1; c > 0; c--) {
+                for (let c = $scope.config.arr.length - 1; c > 0; c--) {
                     let b = Math.floor(Math.random() * (c + 1));
-                    let a = $scope.conf.arr[c];
-                    $scope.conf.arr[c] = $scope.conf.arr[b];
-                    $scope.conf.arr[b] = a;
+                    let a = $scope.config.arr[c];
+                    $scope.config.arr[c] = $scope.config.arr[b];
+                    $scope.config.arr[b] = a;
                 }
-                return $scope.conf.arr;
+                return $scope.config.arr;
             }, 100);
 
             $timeout(() => {
@@ -199,13 +199,13 @@
         }
 
         $scope.startGame = function () {
-            $scope.conf = new Conf();
+            $scope.config = new Config();
             for (let i = 0; i < 25; i++) {
-                let m = $scope.conf.word.split('');
+                let m = $scope.config.word.split('');
                 if (i > 9 && i < 15)
-                    $scope.conf.arr.push(new Box(m[i - 10], $scope.conf.specialStyle, true));
+                    $scope.config.arr.push(new Box(m[i - 10], $scope.config.specialStyle, true));
                 else
-                    $scope.conf.arr.push(new Box(i, $scope.conf.defaultStyle, false));
+                    $scope.config.arr.push(new Box(i, $scope.config.defaultStyle, false));
             }
 
             $scope.counter = 3;
@@ -229,7 +229,7 @@
                     $scope.second++
                 } else
                     $scope.milisecond++;
-                if ($scope.second == $scope.conf.duration) {
+                if ($scope.second == $scope.config.duration) {
                     $interval.cancel(stopWatchInterval);
                     $scope.startGame(); //start again if time is up
                 }
@@ -243,11 +243,11 @@
 
             letter.style += ' background: #5438FF';
 
-            $scope.conf.letter += letter.name;
-            if ($scope.conf.letter.length == $scope.conf.word.length) {
-                if ($scope.conf.letter == $scope.conf.word) {
+            $scope.config.letter += letter.name;
+            if ($scope.config.letter.length == $scope.config.word.length) {
+                if ($scope.config.letter == $scope.config.word) {
                     $interval.cancel(stopWatchInterval);
-                    $scope.conf.msg = $scope.conf.msgSuccess;
+                    $scope.config.msg = $scope.config.msgSuccess;
                 } else {
                     $interval.cancel(stopWatchInterval);
                     $scope.startGame(); //start again wrong inputs
@@ -260,12 +260,12 @@
 <body ng-app='myApp' ng-controller='index-controller'>
     <div class="main">
         <div ng-click='selectAnswers(item)' ng-class="{'ng-repeat-animation': item.specialCharacter}" class="box"
-            ng-repeat='item in conf.arr' style='{{item.style}}'>
+            ng-repeat='item in config.arr' style='{{item.style}}'>
             {{item.specialCharacter ? item.name : ''}}
         </div>
     </div>
 
-    <div ng-if='conf.msg' class="modal">
+    <div ng-if='config.msg' class="modal">
         <div class="content">
             <div class="header">
                 <h3>BRAVO!</h3>
